@@ -3,7 +3,9 @@ import logo from '../logo.svg';
 
 import { 
   LIST_VIEW, CHART_VIEW, 
-  TYPE_INCOME, TYPE_OUTCOME 
+  TYPE_INCOME, TYPE_OUTCOME,
+  parseToYearAndMonth,
+  padLeft
 } from '../utility'
 import PriceList from "../components/PriceList" 
 import ViewTab from "../components/ViewTab"
@@ -11,45 +13,108 @@ import TotalPrice from '../components/TotalPrice'
 import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 
-const items = [{
-  "id": 1,
-  "title": "去云南旅游",
-  "price": 200,
-  "date": "2019-1-23",
-  "category": {
+const categories = {
+  "1": {
     "id": 1,
     "name": "旅游",
     "type": "outcome",
     "iconName": "md-plane"
-  }
-}, {
-  "id": 2,
-  "title": "去云南旅游",
-  "price": 400,
-  "date": "2019-1-22",
-  "category": {
+  }, 
+  "2": {
     "id": 1,
     "name": "旅游",
     "type": "outcome",
     "iconName": "ios-plane"
-  }
-}, {
-  "id": 3,
-  "title": "去云南旅游",
-  "price": 500,
-  "date": "2019-1-22",
-  "category": {
+  },
+  "3": {
     "id": 1,
     "name": "旅游",
     "type": "income",
     "iconName": "ios-plane"
   }
+}
+
+const items = [{
+  "id": 1,
+  "title": "去云南旅游",
+  "price": 200,
+  "date": "2019-01-23",
+  "cid": 1
+}, {
+  "id": 2,
+  "title": "去云南旅游",
+  "price": 400,
+  "date": "2019-01-22",
+  "cid": 2
+}, {
+  "id": 3,
+  "title": "去云南旅游",
+  "price": 500,
+  "date": "2019-10-22", 
+  "cid": 3
 }]
 
+const newItem = {
+  "id": 4,
+  "title": "带妈妈去旅游",
+  "price": 1500,
+  "date": "2019-10-22", 
+  "cid": 1
+}
+
 class Home extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      items,
+      currentDate: parseToYearAndMonth(),
+      tabView: LIST_VIEW
+    }
+  }
+
+  changeView = (view) => {
+    this.setState({
+      tabView: view
+    })
+  }
+  changeDate = (year, month) => {
+    this.setState({
+      currentDate: { year, month }
+    })
+  }
+  modifyItem = (modifiedItem) => {
+    const modifiedItems = this.state.items.map(item => {
+      if (item.id === modifiedItem.id) 
+        return { ...item, title: '买小米手机'}
+      else 
+        return item
+    })
+    this.setState({
+      items: modifiedItems
+    })
+  }
+  createItem = () => {
+    this.setState({
+      items: [newItem, ...this.state.items]
+    })
+  }
+  deleteItem = (deletedItem) => {
+    const filterItems = this.state.items.filter(item => item.id !== deletedItem.id)
+    this.setState({
+      items: filterItems
+    })
+  }
+
   render() {
+    const { items, currentDate, tabView } = this.state
+    const itemWithCategory = items.map(item => {
+      item.category = categories[item.cid]
+      return item
+    }).filter(item => {
+      return item.date.includes(`${currentDate.year}-${padLeft(currentDate.month)}`)
+    })
     let totalInCome = 0, totalOutCome = 0
-    items.forEach(item => {
+    itemWithCategory.forEach(item => {
       if (item.category.type === TYPE_OUTCOME) {
         totalOutCome += item.price
       } else {
@@ -67,9 +132,9 @@ class Home extends Component {
           <div className="row">
             <div className="col">
               <MonthPicker
-                year={2018}
-                month={8}
-                onChange={() => {}}
+                year={currentDate.year}
+                month={currentDate.month}
+                onChange={this.changeDate}
               />
             </div>
             <div className="col">
@@ -82,17 +147,20 @@ class Home extends Component {
         </header>
         <div className="content-area py-3 px-3">
           <ViewTab 
-            activeTab={LIST_VIEW}
-            onTabChange={() => {}}
+            activeTab={tabView}
+            onTabChange={this.changeView}
           />
-          <CreateBtn
-            onClick={() => {}}
-          />
-          <PriceList
-            items={items}
-            onModifyItem={() => {}}
-            onDeleteItem={() => {}}
-          />
+          <CreateBtn onClick={this.createItem} />
+          { tabView === LIST_VIEW &&
+            <PriceList
+              items={itemWithCategory}
+              onModifyItem={this.modifyItem}
+              onDeleteItem={this.deleteItem}
+            />
+          }
+          { tabView === CHART_VIEW &&
+            <h1>Chart Model</h1>
+          }
         </div>
       </Fragment>
     )
