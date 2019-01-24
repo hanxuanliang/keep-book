@@ -27,7 +27,8 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => {
             </span>
             <span className="col-2">{item.date}</span>
             <a className="col-1"
-              onClick={() => {onModifyItem(item)}}
+              role="button"
+              onClick={(event) => {event.preventDefault(); onModifyItem(item)}}
             >
               <Ionicon 
                 className="rounded-circle"
@@ -38,7 +39,8 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => {
               />
             </a>
             <a className="col-1"
-              onClick={() => {onDeleteItem(item)}}
+              role="button"
+              onClick={(event) => {event.preventDefault(); onDeleteItem(item)}}
             >
               <Ionicon 
                 className="rounded-circle"
@@ -56,7 +58,7 @@ const PriceList = ({ items, onModifyItem, onDeleteItem }) => {
 }
 
 // 参数类型限制
-PriceList.PropTypes = {
+PriceList.propTypes = {
   items: PropTypes.array.isRequired,
   onModifyItem: PropTypes.func.isRequired,
   onDeleteItem: PropTypes.func.isRequired

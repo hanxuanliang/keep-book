@@ -16,7 +16,7 @@ const TotalPrice = ({ income, outcome }) => (
   </div>
 )
 
-TotalPrice.PropTypes = {
+TotalPrice.propTypes = {
   income: PropTypes.number.isRequired,
   outcome: PropTypes.number.isRequired
 }

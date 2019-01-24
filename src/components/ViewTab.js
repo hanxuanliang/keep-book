@@ -43,7 +43,7 @@ const ViewTab = ({ activeTab, onTabChange }) => (
   </ul>
 )
 
-ViewTab.PropTypes = {
+ViewTab.propTypes = {
   activeTab: PropTypes.string.isRequired,
   onTabChange: PropTypes.func.isRequired
 }

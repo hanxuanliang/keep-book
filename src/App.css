@@ -1,16 +1,27 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
+  background-color: #ffffff;
+}
+
+[role="button"], 
+a[href="#"], a[href="#0"] {
+  cursor: pointer;
 }
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
+  text-align: center;
 }
 
 .App-header {
   background-color: #282c34;
   padding: 20px;
   color: white;
+}
+
+.App-title {
+  text-align: center;
 }
 
 .App-link {
