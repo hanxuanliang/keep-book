@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { mount } from 'enzyme'
 import MonthPicker from '../MonthPicker'
-import { items } from '../../containers/Home'
 
 let props = {
   year: 2018,
