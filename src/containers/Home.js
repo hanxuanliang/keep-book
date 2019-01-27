@@ -16,6 +16,7 @@ import CreateBtn from '../components/CreateBtn'
 import { Tabs, Tab } from '../components/Tabs'
 
 import { AppContext } from '../App'
+import withContext from '../WithContext'
 
 const categories = {
   "1": {
@@ -112,6 +113,7 @@ class Home extends Component {
   }
 
   render() {
+    const { data } = this.props
     const { items, currentDate, tabView } = this.state
     const itemWithCategory = items.map(item => {
       item.category = categories[item.cid]
@@ -129,74 +131,68 @@ class Home extends Component {
     })
 
     return (
-      <AppContext.Consumer>
-        {({ state }) => {
-          return (
-            <Fragment>
-              <header className="App-header">
-                <div className="row mb-5">
-                  <img src={logo} className="App-logo" alt="logo" />
-                  <h1 className="App-title">React Keep Book</h1>
-                </div>
-                <div className="row">
-                  <div className="col">
-                    <MonthPicker
-                      year={currentDate.year}
-                      month={currentDate.month}
-                      onChange={this.changeDate}
-                    />
-                  </div>
-                  <div className="col">
-                    <TotalPrice
-                      income={totalInCome}
-                      outcome={totalOutCome}
-                    />
-                  </div>
-                </div>
-              </header>
-              <div className="content-area py-3 px-3">
-              <Tabs activeIndex={0} onTabChange={this.changeView}>
-                <Tab>
-                  <Ionicon 
-                    className="rounded-circle mr-2"
-                    fontSize="30px"
-                    color={'#007bff'}
-                    icon="ios-paper"
-                  />
-                  列表模式
-                </Tab>
-                <Tab>
-                  <Ionicon 
-                    className="rounded-circle mr-2"
-                    fontSize="30px"
-                    color={'#007bff'}
-                    icon="ios-paper"
-                  />
-                  图表模式
-                </Tab>
-              </Tabs>
-              <ViewTab 
-                activeTab={tabView}
-                onTabChange={this.changeView}
+      <Fragment>
+        <header className="App-header">
+          <div className="row mb-5">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">React Keep Book</h1>
+          </div>
+          <div className="row">
+            <div className="col">
+              <MonthPicker
+                year={currentDate.year}
+                month={currentDate.month}
+                onChange={this.changeDate}
               />
-              <CreateBtn onClick={this.createItem} />
-              { tabView === LIST_VIEW &&
-                <PriceList
-                  items={itemWithCategory}
-                  onModifyItem={this.modifyItem}
-                  onDeleteItem={this.deleteItem}
-                />
-              }
-              { tabView === CHART_VIEW &&
-                <h1>Chart Model</h1>
-              }
             </div>
-            </Fragment>
-          )
-        }}
-      </AppContext.Consumer>
+            <div className="col">
+              <TotalPrice
+                income={totalInCome}
+                outcome={totalOutCome}
+              />
+            </div>
+          </div>
+        </header>
+        <div className="content-area py-3 px-3">
+        <Tabs activeIndex={0} onTabChange={this.changeView}>
+          <Tab>
+            <Ionicon 
+              className="rounded-circle mr-2"
+              fontSize="30px"
+              color={'#007bff'}
+              icon="ios-paper"
+            />
+            列表模式
+          </Tab>
+          <Tab>
+            <Ionicon 
+              className="rounded-circle mr-2"
+              fontSize="30px"
+              color={'#007bff'}
+              icon="ios-paper"
+            />
+            图表模式
+          </Tab>
+        </Tabs>
+        <ViewTab 
+          activeTab={tabView}
+          onTabChange={this.changeView}
+        />
+        <CreateBtn onClick={this.createItem} />
+        { tabView === LIST_VIEW &&
+          <PriceList
+            items={itemWithCategory}
+            onModifyItem={this.modifyItem}
+            onDeleteItem={this.deleteItem}
+          />
+        }
+        { tabView === CHART_VIEW &&
+          <h1>Chart Model</h1>
+        }
+      </div>
+      </Fragment>
     )
   }
 }
 
-export default Home
+export default withContext(Home)
