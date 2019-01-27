@@ -24,7 +24,7 @@ export const parseToYearAndMonth = (str) => {
 }
 
 export const isValidDate = (dateString) => {
-  const regEx = /^\d{4}-\d{2}-\d{2}$/
+  const regEx = /^\d{4}\/\d{2}\/\d{2}$/
   if (!dateString.match(regEx)) return false;
   const date = new Date(dateString)
   if (Number.isNaN(date.getTime())) return false;
@@ -36,4 +36,8 @@ export const flattenArr = (arr) => {
     map[item.id] = item
     return map
   }, {});
+}
+
+export const produceId = () => {
+  return '_' + Math.random().toString(36).substr(2, 9)
 }
