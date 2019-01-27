@@ -15,7 +15,6 @@ import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 import { Tabs, Tab } from '../components/Tabs'
 
-import { AppContext } from '../App'
 import withContext from '../WithContext'
 
 const tabsText =  [LIST_VIEW, CHART_VIEW]
@@ -51,14 +50,17 @@ class Home extends Component {
 
   render() {
     const { data } = this.props
-    const { items, categories } = data
-    const { currentDate, tabView } = this.state
+    const { items, categories,  } = data
+    const { tabView, currentDate } = this.state
+
+    const tabIndex = tabsText.findIndex(tabText => tabText === tabView)
     const itemWithCategory = Object.keys(items).map(id => {
       items[id].category = categories[items[id].cid]
       return items[id]
     }).filter(item => {
       return item.date.includes(`${currentDate.year}-${padLeft(currentDate.month)}`)
     })
+
     let totalInCome = 0, totalOutCome = 0
     itemWithCategory.forEach(item => {
       if (item.category.type === TYPE_OUTCOME) {
@@ -92,7 +94,7 @@ class Home extends Component {
           </div>
         </header>
         <div className="content-area py-3 px-3">
-          <Tabs activeIndex={0} onTabChange={this.changeView}>
+          <Tabs activeIndex={tabIndex} onTabChange={this.changeView}>
             <Tab>
               <Ionicon 
                 className="rounded-circle mr-2"

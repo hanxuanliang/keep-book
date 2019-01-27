@@ -19,7 +19,7 @@ class App extends Component {
     super(props)
     this.state = {
       items: flattenArr(testItems),
-      categories: flattenArr(testCategories)
+      categories: flattenArr(testCategories),
     }
     this.actions = {
       deleteItem: (deletedItem) => {
@@ -29,8 +29,6 @@ class App extends Component {
         })
       },
       createItem: (data, categoryId) => {
-        // console.log('haha', data)
-        // console.log('cid', categoryId)
         const newId = produceId()
         const parsedDate = parseToYearAndMonth(data.date)
         data.monthCategory = `${parsedDate.year}-${parsedDate.month}`
@@ -38,6 +36,16 @@ class App extends Component {
         const newItem = { ...data, id: newId, cid: categoryId }
         this.setState({
           items: { ...this.state.items, [newId]: newItem }
+        })
+      },
+      updateItem: (updatedItem, updatedCategoryId) => {
+        const modifiedItem = {
+          ...updatedItem,
+          cid: updatedCategoryId,
+          timestamp: new Date(updatedItem.date).getTime()
+        }
+        this.setState({
+          items: { ...this.state.items, [modifiedItem.id]: modifiedItem }
         })
       }
     }
