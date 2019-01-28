@@ -1,5 +1,6 @@
 import React, { Component, createContext } from 'react';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import axios from 'axios';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 
@@ -8,7 +9,6 @@ import {
   produceId,
   parseToYearAndMonth
 } from './utility'
-import { testItems, testCategories } from './testData';
 import Home from './containers/Home'
 import Create from './containers/Create'
 
@@ -18,10 +18,25 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      items: flattenArr(testItems),
-      categories: flattenArr(testCategories),
+      items: {},
+      categories: {},
+      currentDate: parseToYearAndMonth()
     }
     this.actions = {
+      getInitalData: () => {
+        const { currentDate } = this.state
+        const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`
+        const promiseArr = [axios.get('/categories'), axios.get(getURLWithData)]
+
+        Promise.all(promiseArr).then(arr => {
+          const [ categories, items ] = arr
+          console.log(arr)
+          this.setState({
+            items: flattenArr(items.data),
+            categories: flattenArr(categories.data)
+          })
+        })
+      },
       deleteItem: (deletedItem) => {
         delete this.state.items[deletedItem.id]
         this.setState({
