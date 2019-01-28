@@ -37,9 +37,7 @@ class Home extends Component {
     })
   }
   changeDate = (year, month) => {
-    this.setState({
-      currentDate: { year, month }
-    })
+    this.props.actions.selectNewMonth(year, month)
   }
   createItem = () => {
     this.props.history.push('/create')
@@ -57,13 +55,13 @@ class Home extends Component {
     const { tabView } = this.state
 
     const tabIndex = tabsText.findIndex(tabText => tabText === tabView)
-    const itemWithCategory = Object.keys(items).map(id => {
+    const itemsWithCategory = Object.keys(items).map(id => {
       items[id].category = categories[items[id].cid]
       return items[id]
     })
 
     let totalInCome = 0, totalOutCome = 0
-    itemWithCategory.forEach(item => {
+    itemsWithCategory.forEach(item => {
       if (item.category.type === TYPE_OUTCOME) {
         totalOutCome += item.price
       } else {
@@ -116,12 +114,17 @@ class Home extends Component {
             </Tab>
           </Tabs>
           <CreateBtn onClick={this.createItem} />
-          { tabView === LIST_VIEW &&
+          { tabView === LIST_VIEW && itemsWithCategory.length > 0 &&
             <PriceList
-              items={itemWithCategory}
+              items={itemsWithCategory}
               onModifyItem={this.modifyItem}
               onDeleteItem={this.deleteItem}
             />
+          }
+          { tabView === LIST_VIEW && itemsWithCategory.length === 0 &&
+            <div className="alert alert-light text-center no-record">
+              您还没有任何记账记录
+            </div>
           }
           { tabView === CHART_VIEW &&
             <h1>Chart Model</h1>

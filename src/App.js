@@ -30,18 +30,28 @@ class App extends Component {
 
         Promise.all(promiseArr).then(arr => {
           const [ categories, items ] = arr
-          console.log(arr)
           this.setState({
             items: flattenArr(items.data),
             categories: flattenArr(categories.data)
           })
         })
       },
+      selectNewMonth: (year, month) => {
+        const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
+        axios.get(getURLWithData)
+          .then(items => {this.setState({
+            items: flattenArr(items.data),
+            currentDate: { year, month }
+          })})
+      },
       deleteItem: (deletedItem) => {
-        delete this.state.items[deletedItem.id]
-        this.setState({
-          items: this.state.items
-        })
+        axios.delete(`/items/${deletedItem.id}`)
+          .then(() => {
+            delete this.state.items[deletedItem.id]
+            this.setState({
+              items: this.state.items
+            })
+          })
       },
       createItem: (data, categoryId) => {
         const newId = produceId()
