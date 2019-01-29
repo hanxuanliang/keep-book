@@ -48,27 +48,34 @@ class App extends Component {
         })
       }),
       getEditData: withLoading(async (id) => {
-        let promiseArr = [axios.get('/categories')]
-        if (id) {
+        const { items, categories } = this.state
+        let promiseArr = []
+        if (Object.keys(categories).length === 0) {
+          promiseArr.push(axios.get('/categories'))
+        }
+        const itemAlreadyFetched = !!(Object.keys(items).indexOf(id) > -1)
+        if (id && !itemAlreadyFetched) {
           const getURLWithID = `/items/${id}` 
           promiseArr.push(axios.get(getURLWithID))
         }
-        const [ categories, editItem ] = await Promise.all(promiseArr)
+        const [ fetchedCategories, editItem ] = await Promise.all(promiseArr)
+        const finalCategories = fetchedCategories ? flattenArr(fetchedCategories.data) : categories
+        const finalItem = editItem ? editItem.data : items[id]
         if (id) {
           this.setState({
-            categories: flattenArr(categories.data),
+            categories: finalCategories,
             isLoading: false,
-            items: { ...this.state.items, [id]: editItem.data }
+            items: { ...this.state.items, [id]: finalItem }
           })
         } else {
           this.setState({
-            categories: flattenArr(categories.data),
+            categories: finalCategories,
             isLoading: false,
           })
         }
         return {
-          categories: flattenArr(categories.data),
-          editItem: editItem ? editItem.data : null
+          categories: finalCategories,
+          editItem: finalItem
         }
       }),
       selectNewMonth: withLoading(async (year, month) => {
