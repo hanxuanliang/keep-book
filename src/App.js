@@ -23,8 +23,16 @@ class App extends Component {
       isLoading: false,
       currentDate: parseToYearAndMonth()
     }
+    const withLoading = (cb) => {
+      return (...args) => {
+        this.setState({
+          isLoading: true
+        })
+        return cb(...args)
+      }
+    }
     this.actions = {
-      getInitalData: async () => {
+      getInitalData: withLoading(async () => {
         this.setState({
           isLoading: true
         })
@@ -38,24 +46,26 @@ class App extends Component {
           categories: flattenArr(categories.data),
           isLoading: false
         })
-      },
-      selectNewMonth: async (year, month) => {
+      }),
+      selectNewMonth: withLoading(async (year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
         const items = await axios.get(getURLWithData)
         this.setState({
           items: flattenArr(items.data),
-          currentDate: { year, month }
+          currentDate: { year, month },
+          isLoading: false
         })
         return items
-      },
-      deleteItem: async (deletedItem) => {
+      }),
+      deleteItem: withLoading(async (deletedItem) => {
         const deleted = await axios.delete(`/items/${deletedItem.id}`)
         delete this.state.items[deletedItem.id]
         this.setState({
-          items: this.state.items
+          items: this.state.items,
+          isLoading: false
         })
         return deleted
-      },
+      }),
       createItem: (data, categoryId) => {
         const newId = produceId()
         const parsedDate = parseToYearAndMonth(data.date)
