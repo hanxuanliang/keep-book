@@ -24,39 +24,37 @@ class App extends Component {
       currentDate: parseToYearAndMonth()
     }
     this.actions = {
-      getInitalData: () => {
+      getInitalData: async () => {
         this.setState({
           isLoading: true
         })
         const { currentDate } = this.state
         const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`
-        const promiseArr = [axios.get('/categories'), axios.get(getURLWithData)]
+        const results = await Promise.all([axios.get('/categories'), axios.get(getURLWithData)])
 
-        Promise.all(promiseArr).then(arr => {
-          const [ categories, items ] = arr
-          this.setState({
-            items: flattenArr(items.data),
-            categories: flattenArr(categories.data),
-            isLoading: false
-          })
+        const [ categories, items ] = results
+        this.setState({
+          items: flattenArr(items.data),
+          categories: flattenArr(categories.data),
+          isLoading: false
         })
       },
-      selectNewMonth: (year, month) => {
+      selectNewMonth: async (year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
-        axios.get(getURLWithData)
-          .then(items => {this.setState({
-            items: flattenArr(items.data),
-            currentDate: { year, month }
-          })})
+        const items = await axios.get(getURLWithData)
+        this.setState({
+          items: flattenArr(items.data),
+          currentDate: { year, month }
+        })
+        return items
       },
-      deleteItem: (deletedItem) => {
-        axios.delete(`/items/${deletedItem.id}`)
-          .then(() => {
-            delete this.state.items[deletedItem.id]
-            this.setState({
-              items: this.state.items
-            })
-          })
+      deleteItem: async (deletedItem) => {
+        const deleted = await axios.delete(`/items/${deletedItem.id}`)
+        delete this.state.items[deletedItem.id]
+        this.setState({
+          items: this.state.items
+        })
+        return deleted
       },
       createItem: (data, categoryId) => {
         const newId = produceId()
