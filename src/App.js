@@ -20,10 +20,14 @@ class App extends Component {
     this.state = {
       items: {},
       categories: {},
+      isLoading: false,
       currentDate: parseToYearAndMonth()
     }
     this.actions = {
       getInitalData: () => {
+        this.setState({
+          isLoading: true
+        })
         const { currentDate } = this.state
         const getURLWithData = `/items?monthCategory=${currentDate.year}-${currentDate.month}&_sort=timestamp&_order=desc`
         const promiseArr = [axios.get('/categories'), axios.get(getURLWithData)]
@@ -32,7 +36,8 @@ class App extends Component {
           const [ categories, items ] = arr
           this.setState({
             items: flattenArr(items.data),
-            categories: flattenArr(categories.data)
+            categories: flattenArr(categories.data),
+            isLoading: false
           })
         })
       },
