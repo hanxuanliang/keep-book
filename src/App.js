@@ -47,6 +47,30 @@ class App extends Component {
           isLoading: false
         })
       }),
+      getEditData: withLoading(async (id) => {
+        let promiseArr = [axios.get('/categories')]
+        if (id) {
+          const getURLWithID = `/items/${id}` 
+          promiseArr.push(axios.get(getURLWithID))
+        }
+        const [ categories, editItem ] = await Promise.all(promiseArr)
+        if (id) {
+          this.setState({
+            categories: flattenArr(categories.data),
+            isLoading: false,
+            items: { ...this.state.items, [id]: editItem.data }
+          })
+        } else {
+          this.setState({
+            categories: flattenArr(categories.data),
+            isLoading: false,
+          })
+        }
+        return {
+          categories: flattenArr(categories.data),
+          editItem: editItem ? editItem.data : null
+        }
+      }),
       selectNewMonth: withLoading(async (year, month) => {
         const getURLWithData = `/items?monthCategory=${year}-${month}&_sort=timestamp&_order=desc`
         const items = await axios.get(getURLWithData)

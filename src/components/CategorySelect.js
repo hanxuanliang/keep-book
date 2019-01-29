@@ -5,22 +5,16 @@ import PropTypes from 'prop-types'
 class CategorySelect extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      selectedCategoryId: props.selectedCategory && props.selectedCategory.id
-    }
   }
 
-  selectedCategory = (event, category) => {
-    this.setState({
-      selectedCategoryId: category.id
-    })
+  selectCategory = (event, category) => {
     this.props.onSelectCategory(category)
     event.preventDefault()
   }
 
   render() {
-    const { categories } = this.props 
-    const { selectedCategoryId } = this.state
+    const { categories, selectedCategory } = this.props
+    const selectedCategoryId =  selectedCategory && selectedCategory.id
     return (
       <div className="category-select-component">
         <div className="row">
@@ -36,7 +30,7 @@ class CategorySelect extends Component {
                   key={index}
                   role="button"
                   style={{textAlign: 'center'}}
-                  onClick={(event) => {this.selectedCategory(event, category)}}
+                  onClick={(event) => {this.selectCategory(event, category)}}
                 >
                   <Ionicon 
                     className="rounded-circle"
