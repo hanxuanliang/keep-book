@@ -58,11 +58,16 @@ class Create extends Component {
     if (!isEditMode) {
       // create
       this.props.actions.createItem(data, this.state.selectedCategory.id)
+        .then(() => {
+          this.props.history.push('/')
+        })
     } else {
       // update
       this.props.actions.updateItem(data, this.state.selectedCategory.id)
+        .then(() => {
+          this.props.history.push('/')
+        })
     }
-    this.props.history.push('/')
   }
 
   render() {

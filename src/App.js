@@ -90,26 +90,31 @@ class App extends Component {
         })
         return deleted
       }),
-      createItem: (data, categoryId) => {
+      createItem: withLoading(async (data, categoryId) => {
         const newId = produceId()
         const parsedDate = parseToYearAndMonth(data.date)
         data.monthCategory = `${parsedDate.year}-${parsedDate.month}`
         data.timestamp = new Date(data.date).getTime()
-        const newItem = { ...data, id: newId, cid: categoryId }
+        const newItem = await axios.post('/items', {...data, id: newId, cid: categoryId})
         this.setState({
-          items: { ...this.state.items, [newId]: newItem }
+          items: { ...this.state.items, [newId]: newItem.data },
+          isLoading: false
         })
-      },
-      updateItem: (updatedItem, updatedCategoryId) => {
-        const modifiedItem = {
+        return newItem.data
+      }),
+      updateItem: withLoading(async (updatedItem, updatedCategoryId) => {
+        const updatedData = {
           ...updatedItem,
           cid: updatedCategoryId,
           timestamp: new Date(updatedItem.date).getTime()
         }
+        const modifiedItem = await axios.put(`/items/${updatedItem.id}`, updatedData)
         this.setState({
-          items: { ...this.state.items, [modifiedItem.id]: modifiedItem }
+          items: { ...this.state.items, [modifiedItem.id]: modifiedItem.data },
+          isLoading: false
         })
-      }
+        return modifiedItem.data
+      })
     }
   }
 
