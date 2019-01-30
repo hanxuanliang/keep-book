@@ -6,8 +6,6 @@ import { withRouter } from 'react-router-dom'
 import { 
   LIST_VIEW, CHART_VIEW, 
   TYPE_INCOME, TYPE_OUTCOME,
-  parseToYearAndMonth,
-  padLeft
 } from '../utility'
 import PriceList from "../components/PriceList" 
 import TotalPrice from '../components/TotalPrice'
@@ -15,10 +13,28 @@ import MonthPicker from '../components/MonthPicker'
 import CreateBtn from '../components/CreateBtn'
 import { Tabs, Tab } from '../components/Tabs'
 import Loader from '../components/Loader'
+import PieChart from '../components/PieChart'
 
 import withContext from '../WithContext'
 
 const tabsText =  [LIST_VIEW, CHART_VIEW]
+
+const generateChartDataByCategory = (items, type=TYPE_OUTCOME) => {
+  let categoryMap = {}
+  items.filter(item => item.category.type === type).forEach(item => {
+    if (categoryMap[item.cid]) {
+      categoryMap[item.cid].value += (item.price * 1)
+      categoryMap[item.cid].items = [...categoryMap[item.cid].items, item.id]
+    } else {
+      categoryMap[item.cid] = {
+        name: item.category.name,
+        value: item.price * 1,
+        items: [item.id]
+      }
+    }
+  })
+  return Object.keys(categoryMap).map(key => ({ ...categoryMap[key] }))
+}
 
 class Home extends Component {
   constructor(props) {
@@ -69,6 +85,9 @@ class Home extends Component {
         totalInCome += item.price
       }
     })
+
+    const chartOutcomDataByCategory = generateChartDataByCategory(itemsWithCategory, TYPE_OUTCOME)
+    const chartIncomDataByCategory = generateChartDataByCategory(itemsWithCategory, TYPE_INCOME)
 
     return (
       <Fragment>
@@ -133,7 +152,10 @@ class Home extends Component {
                 </div>
               }
               { tabView === CHART_VIEW &&
-                <h1>Chart Model</h1>
+                <Fragment>
+                  <PieChart title="本月支出" categoryData={chartOutcomDataByCategory} />
+                  <PieChart title="本月收入" categoryData={chartIncomDataByCategory} />
+                </Fragment>
               }
             </Fragment> 
           }
